@@ -4,16 +4,25 @@ from sly import Lexer
 
 class Scanner(Lexer):
 
+    # Słowa kluczowe
+    reserved = {IF, ELSE, FOR, WHILE, BREAK, CONTINUE, RETURN, EYE, ZEROS, ONES, PRINT}
+
+    # Tokeny
     tokens={ID, DOTADD, DOTSUB, DOTMULT, DOTDIV, ADDASSIGN, SUBASSIGN, MULTASSIGN, 
-            DIVASSIGN,LT, GT, NOTEQUAL, EQUAL, IF, ELSE, FOR,
-              WHILE, BREAK, CONTINUE, RETURN, EYE, ZEROS, ONES, PRINT,INT,
-            FLOAT, STRINGS    }
+            DIVASSIGN,LT, GT, NOTEQUAL, EQUAL, INT,
+            FLOAT, STRINGS} | reserved
+    
+    # Literał, zwracany przez lexer w takiej samej postaci
     literals = [ '+', '-', '*', '/','=','<','>','(',')','[',']','{','}',',',':',';','\'' ]
-
-    ignore=' \t\n'
-    ignore_comment=r'#.*\n'
-    igonre_comment2=R'\'\'\'.*\'\'\''
-
+    
+    # Z teści zadania:
+    # Następujące znaki powinny być pomijane:
+    #     białe znaki: spacje, tabulatory, znaki nowej linii
+    #     komentarze: komentarze rozpoczynające się znakiem # do znaku końca linii
+    ignore=' \t'
+    ignore_comment=r'#.*'
+    #igonre_comment2=R'\'\'\'.*\'\'\''
+    
     ID = r'[a-zA-Z_][a-zA-Z0-9_]*'
     DOTADD=r'\.\+'
     DOTSUB=r'\.-'
@@ -27,26 +36,46 @@ class Scanner(Lexer):
     GT=r'>='
     NOTEQUAL=r'!='
     EQUAL=r'=='
-    IF=r'if'
-    ELSE=r'else'
-    FOR=r'for'
-    WHILE=r'while'
-    BREAK=r'break'
-    CONTINUE=r'continue'
-    RETURN=r'return'
-    EYE=r'eye'
-    ZEROS=r'zeros'
-    ONES=r'ones'
-    PRINT= r'print'
-    INT=r'\d+'
-    FLOAT=r'\d+\.\d*'
-    STRING=r'\".*?\"'
+    
+    # https://sly.readthedocs.io/en/latest/sly.html#token-remapping
+    ID['if'] = IF
+    ID['else'] = ELSE
+    ID['for'] = FOR
+    ID['while'] = WHILE
+    ID['break'] = BREAK
+    ID['continue'] = CONTINUE
+    ID['return'] = RETURN
+    ID['eye'] = EYE
+    ID['zeros'] = ZEROS
+    ID['ones'] = ONES
+    ID['print'] = PRINT
+    
+    # https://sly.readthedocs.io/en/latest/sly.html#adding-match-actions
+    
+    # FLOAT musi być dopasowany przed INT'em, bo może dojść do sytuacji, że:
+    # dopasujemy 60.5 do INT jeśli najpierw sprawdzimy r'\d+'
+    @_(r'(\d+\.\d*|\.\d+)([eE][-]?\d+)?')
+    def FLOAT(self, t):
+        t.value = float(t.value)
+        return t
+    
+    @_(r'\d+')
+    def INT(self, t):
+        t.value = int(t.value)
+        return t
 
-    pass
-
-
-
-
+    @_(r'\".*?\"')
+    def STRING(self, t):
+        t.value = str(t.value)
+        return t
+    
+    @_(r'\n+')
+    def ignore_newline(self, t):
+        self.lineno += len(t.value) # Zliczamy, w której lini jesteśmy
+        
+    def error(self, t):
+        print(f"W lini ({t.lineno}) wystąpił nierozpoznany znak '{t.value[0]}'")
+        self.index += 1 # Skip do następnego znaku zamiast domyślnego rzucenia wyjątku
 
 if __name__ == '__main__':
 
