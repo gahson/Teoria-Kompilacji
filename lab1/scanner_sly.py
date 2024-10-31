@@ -24,6 +24,20 @@ class Scanner(Lexer):
     #igonre_comment2=R'\'\'\'.*\'\'\''
     
     ID = r'[a-zA-Z_][a-zA-Z0-9_]*'
+
+    # https://sly.readthedocs.io/en/latest/sly.html#token-remapping
+    ID['if'] = IF
+    ID['else'] = ELSE
+    ID['for'] = FOR
+    ID['while'] = WHILE
+    ID['break'] = BREAK
+    ID['continue'] = CONTINUE
+    ID['return'] = RETURN
+    ID['eye'] = EYE
+    ID['zeros'] = ZEROS
+    ID['ones'] = ONES
+    ID['print'] = PRINT
+
     DOTADD=r'\.\+'
     DOTSUB=r'\.-'
     DOTMULT=r'\.\*'
@@ -37,24 +51,13 @@ class Scanner(Lexer):
     NOTEQUAL=r'!='
     EQUAL=r'=='
     
-    # https://sly.readthedocs.io/en/latest/sly.html#token-remapping
-    ID['if'] = IF
-    ID['else'] = ELSE
-    ID['for'] = FOR
-    ID['while'] = WHILE
-    ID['break'] = BREAK
-    ID['continue'] = CONTINUE
-    ID['return'] = RETURN
-    ID['eye'] = EYE
-    ID['zeros'] = ZEROS
-    ID['ones'] = ONES
-    ID['print'] = PRINT
+
     
     # https://sly.readthedocs.io/en/latest/sly.html#adding-match-actions
     
     # FLOAT musi być dopasowany przed INT'em, bo może dojść do sytuacji, że:
     # dopasujemy 60.5 do INT jeśli najpierw sprawdzimy r'\d+'
-    @_(r'(\d+\.\d*|\.\d+)([eE][-]?\d+)?')
+    @_(r'((\d+\.\d*|\.\d+)([eE][-+]?\d+)?)|(\d+)([eE][-+]?\d+)')
     def FLOAT(self, t):
         t.value = float(t.value)
         return t
