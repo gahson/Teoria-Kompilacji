@@ -20,192 +20,227 @@ class Mparser(Parser):
     # program -> instructions_opt
     @_('instructions_opt')
     def program(self, p):
-        return p.instructions_opt
+        pass
 
     # instructions_opt -> instructions | ε
     @_('instructions')
     def instructions_opt(self, p):
-        return p.instructions
+        pass
 
     @_('')  # epsilon production
     def instructions_opt(self, p):
-        return []
+        pass
 
     # instructions -> instructions instruction | instruction
     @_('instructions instruction')
     def instructions(self, p):
-        return p.instructions + [p.instruction]
+        pass
 
     @_('instruction')
     def instructions(self, p):
-        return [p.instruction]
+        pass
 
     # instruction -> { instructions } | reserved_instruction ; | assignment_instruction ;
     @_(" '{' instructions '}' ")
     def instruction(self, p):
-        return p.instructions
+        pass
 
     @_("reserved_instruction ';'")  # Simple instruction
     def instruction(self, p):
-        return p.reserved_instruction
+        pass
 
     @_("assignment_instruction ';'")  # Assignment instruction
     def instruction(self, p):
-        return p.assignment_instruction
+        pass
 
     # reserved_instruction -> IF '(' condition ')' instruction [ ELSE instruction ]
-    @_('IF "(" condition ")" instruction %prec IFX')
+    @_('IF "(" condition ")" instructions %prec IFX')
     def reserved_instruction(self, p):
-        return ('if', p.condition, p.instruction)
+        pass
 
-    @_('IF "(" condition ")" instruction ELSE instruction')
+    @_('IF "(" condition ")" instructions ELSE instructions')
     def reserved_instruction(self, p):
-        return ('if-else', p.condition, p.instruction0, p.instruction1)
+        pass
 
     # Loop instructions
-    @_('FOR var "=" expression ":" expression instruction')
+    @_('FOR var "=" expression ":" expression instructions')
     def reserved_instruction(self, p):
-        return ('for', p.var, p.expression0, p.expression1, p.instruction)
+        pass
 
-    @_('WHILE "(" condition ")" instruction')
+    @_('WHILE "(" condition ")" instructions')
     def reserved_instruction(self, p):
-        return ('while', p.condition, p.instruction)
+        pass
 
     # Simple reserved instructions
     @_('BREAK')
     def reserved_instruction(self, p):
-        return ('break',)
+        pass
 
     @_('CONTINUE')
     def reserved_instruction(self, p):
-        return ('continue',)
+        pass
 
-    @_('RETURN expression')
+    @_('RETURN expression_list')
     def reserved_instruction(self, p):
-        return ('return', p.expression)
+        pass
+    
+    # Expression list for print
+    @_('expression_list "," expression')
+    def expression_list(self, p):
+        pass
 
-    @_('PRINT expression')
+    @_('expression')
+    def expression_list(self, p):
+        pass
+
+    @_('PRINT expression_list')
     def reserved_instruction(self, p):
-        return ('print', p.expression)
+        pass
 
     # assignment_instruction -> var '=' expression
     @_('var "=" expression')
     def assignment_instruction(self, p):
-        return ('assign', p.var, p.expression)
+        pass
 
     # Extended assignment instructions
     @_('var ADDASSIGN expression')
     def assignment_instruction(self, p):
-        return ('add_assign', p.var, p.expression)
+        pass
 
     @_('var SUBASSIGN expression')
     def assignment_instruction(self, p):
-        return ('sub_assign', p.var, p.expression)
+        pass
 
     @_('var MULTASSIGN expression')
     def assignment_instruction(self, p):
-        return ('mul_assign', p.var, p.expression)
+        pass
 
     @_('var DIVASSIGN expression')
     def assignment_instruction(self, p):
-        return ('div_assign', p.var, p.expression)
+        pass
 
     # Binary expressions
     @_('expression "+" expression')
     def expression(self, p):
-        return ('add', p.expression0, p.expression1)
+        pass
 
     @_('expression "-" expression')
     def expression(self, p):
-        return ('sub', p.expression0, p.expression1)
+        pass
 
     @_('expression "*" expression')
     def expression(self, p):
-        return ('mul', p.expression0, p.expression1)
+        pass
 
     @_('expression "/" expression')
     def expression(self, p):
-        return ('div', p.expression0, p.expression1)
+        pass
 
-    #Matrix expressions
+    # Matrix expressions
     @_('expression DOTADD expression')
     def expression(self, p):
-        return ('dotadd', p.expression0, p.expression1)
+        pass
 
     @_('expression DOTSUB expression')
     def expression(self, p):
-        return ('dotsub', p.expression0, p.expression1)
+        pass
 
     @_('expression DOTMULT expression')
     def expression(self, p):
-        return ('dotmul', p.expression0, p.expression1)
+        pass
 
     @_('expression DOTDIV expression')
     def expression(self, p):
-        return ('dotdiv', p.expression0, p.expression1)
+        pass
 
     # Relational expressions using defined tokens
     @_('expression EQUAL expression')
     def condition(self, p):
-        return ('eq', p.expression0, p.expression1)
+        pass
 
     @_('expression NOTEQUAL expression')
     def condition(self, p):
-        return ('neq', p.expression0, p.expression1)
+        pass
 
     @_('expression LT expression')
     def condition(self, p):
-        return ('lt', p.expression0, p.expression1)
+        pass
 
     @_('expression GT expression')
     def condition(self, p):
-        return ('gt', p.expression0, p.expression1)
+        pass
 
     @_('expression LE expression')
     def condition(self, p):
-        return ('le', p.expression0, p.expression1)
+        pass
 
     @_('expression GE expression')
     def condition(self, p):
-        return ('ge', p.expression0, p.expression1)
+        pass
+    
+    @_('var EQUAL expression')
+    def condition(self, p):
+        pass
+
+    @_('var NOTEQUAL expression')
+    def condition(self, p):
+        pass
+
+    @_('var LT expression')
+    def condition(self, p):
+        pass
+
+    @_('var GT expression')
+    def condition(self, p):
+        pass
+
+    @_('var LE expression')
+    def condition(self, p):
+        pass
+
+    @_('var GE expression')
+    def condition(self, p):
+        pass
 
     # Unary expressions
     @_('expression "\'"')
     def expression(self, p):
-        return ('transpose', p.expression)
+        pass
 
     @_('"-" expression')
     def expression(self, p):
-        return ('negate', p.expression)
+        pass
 
     # Matrix functions
     @_('EYE "(" expression ")"')
     def expression(self, p):
-        return ('eye', p.expression)
+        pass
 
     @_('ZEROS "(" expression ")"')
     def expression(self, p):
-        return ('zeros', p.expression)
+        pass
 
     @_('ONES "(" expression ")"')
     def expression(self, p):
-        return ('ones', p.expression)
+        pass
 
     # Variable and constants
     @_('INT')
     def expression(self, p):
-        return ('number', p.INT)
+        pass
 
     @_('FLOAT')
     def expression(self, p):
-        return ('float', p.FLOAT)
+        pass
 
     @_('var')
     def expression(self, p):
-        return ('var', p.var)
+        pass
 
     @_('ID')
     def var(self, p):
-        return ('id', p.ID)
+        pass
 
-
+    @_('STRING')
+    def expression(self, p):
+        pass
