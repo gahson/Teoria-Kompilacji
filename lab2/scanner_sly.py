@@ -9,11 +9,11 @@ class Scanner(Lexer):
 
     # Tokeny
     tokens={ID, DOTADD, DOTSUB, DOTMULT, DOTDIV, ADDASSIGN, SUBASSIGN, MULTASSIGN, 
-            DIVASSIGN,LT, GT, NOTEQUAL, EQUAL, INT,
-            FLOAT, STRINGS} | reserved
+            DIVASSIGN,LE, GE, LT, GT, NOTEQUAL, EQUAL, INT,
+            FLOAT, STRING} | reserved
     
     # Literał, zwracany przez lexer w takiej samej postaci
-    literals = [ '+', '-', '*', '/','=','<','>','(',')','[',']','{','}',',',':',';','\'' ]
+    literals = [ '+', '-', '*', '/','=','(',')','[',']','{','}',',',':',';','\'' ]
     
     # Z teści zadania:
     # Następujące znaki powinny być pomijane:
@@ -32,8 +32,10 @@ class Scanner(Lexer):
     SUBASSIGN=r'-='
     MULTASSIGN=r'\*='
     DIVASSIGN=r'/='
-    LT=r'<='
-    GT=r'>='
+    LE=r'<='
+    GE=r'>='
+    LT=r'<'
+    GT=r'>'
     NOTEQUAL=r'!='
     EQUAL=r'=='
     
