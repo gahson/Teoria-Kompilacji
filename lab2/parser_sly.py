@@ -23,52 +23,37 @@ class Mparser(Parser):
         pass
 
     # instructions_opt -> instructions | ε
-    @_('instructions')
-    def instructions_opt(self, p):
-        pass
-
-    @_('')  # epsilon production
+    @_('instructions', '')
     def instructions_opt(self, p):
         pass
 
     # instructions -> instructions instruction | instruction
-    @_('instructions instruction')
-    def instructions(self, p):
-        pass
-
-    @_('instruction')
+    @_('instructions instruction', 'instruction')
     def instructions(self, p):
         pass
 
     # instruction -> { instructions } | reserved_instruction ; | assignment_instruction ;
-    @_(" '{' instructions '}' ")
+    @_(" '{' instructions '}' ", "reserved_instruction ';'", "assignment_instruction ';'")
     def instruction(self, p):
         pass
-
-    @_("reserved_instruction ';'")  # Simple instruction
+    
+    # instruction -> IF '(' condition ')' instruction
+    @_('IF "(" condition ")" instruction %prec IFX')
     def instruction(self, p):
         pass
-
-    @_("assignment_instruction ';'")  # Assignment instruction
+    
+    # instruction -> IF '(' condition ')' instruction ELSE instruction
+    @_('IF "(" condition ")" instruction ELSE instruction')
     def instruction(self, p):
-        pass
-
-    # reserved_instruction -> IF '(' condition ')' instruction [ ELSE instruction ]
-    @_('IF "(" condition ")" instructions %prec IFX')
-    def reserved_instruction(self, p):
-        pass
-
-    @_('IF "(" condition ")" instructions ELSE instructions')
-    def reserved_instruction(self, p):
         pass
 
     # Loop instructions
-    @_('FOR var "=" expression ":" expression instructions')
-    def reserved_instruction(self, p):
+    @_('FOR var "=" expression ":" expression instruction')
+    def instruction(self, p):
         pass
 
-    @_('WHILE "(" condition ")" instructions')
-    def reserved_instruction(self, p):
+    @_('WHILE "(" condition ")" instruction')
+    def instruction(self, p):
         pass
 
     # Simple reserved instructions
@@ -97,150 +82,119 @@ class Mparser(Parser):
     def reserved_instruction(self, p):
         pass
 
-    # assignment_instruction -> var '=' expression
-    @_('var "=" expression')
+    @_(
+        'var assignment_operator expression',
+        'matrix_idx assignment_operator expression',
+        'vector_idx assignment_operator expression'
+    )
     def assignment_instruction(self, p):
         pass
 
-    # Extended assignment instructions
-    @_('var ADDASSIGN expression')
-    def assignment_instruction(self, p):
-        pass
-
-    @_('var SUBASSIGN expression')
-    def assignment_instruction(self, p):
-        pass
-
-    @_('var MULTASSIGN expression')
-    def assignment_instruction(self, p):
-        pass
-
-    @_('var DIVASSIGN expression')
-    def assignment_instruction(self, p):
+    @_(
+        '"="',
+        'ADDASSIGN',
+        'SUBASSIGN',
+        'MULTASSIGN',
+        'DIVASSIGN'
+    )
+    def assignment_operator(self, p):
         pass
 
     # Binary expressions
-    @_('expression "+" expression')
-    def expression(self, p):
-        pass
-
-    @_('expression "-" expression')
-    def expression(self, p):
-        pass
-
-    @_('expression "*" expression')
-    def expression(self, p):
-        pass
-
-    @_('expression "/" expression')
+    @_(
+       'expression "+" expression',
+       'expression "-" expression',
+       'expression "*" expression',
+       'expression "/" expression'
+       )
     def expression(self, p):
         pass
 
     # Matrix expressions
-    @_('expression DOTADD expression')
+    @_(
+        'expression DOTADD expression',
+        'expression DOTSUB expression',
+        'expression DOTMULT expression',
+        'expression DOTDIV expression'
+        )
     def expression(self, p):
-        pass
-
-    @_('expression DOTSUB expression')
-    def expression(self, p):
-        pass
-
-    @_('expression DOTMULT expression')
-    def expression(self, p):
-        pass
-
-    @_('expression DOTDIV expression')
-    def expression(self, p):
-        pass
-
-    # Relational expressions using defined tokens
-    @_('expression EQUAL expression')
-    def condition(self, p):
-        pass
-
-    @_('expression NOTEQUAL expression')
-    def condition(self, p):
-        pass
-
-    @_('expression LT expression')
-    def condition(self, p):
-        pass
-
-    @_('expression GT expression')
-    def condition(self, p):
-        pass
-
-    @_('expression LE expression')
-    def condition(self, p):
-        pass
-
-    @_('expression GE expression')
-    def condition(self, p):
-        pass
-    
-    @_('var EQUAL expression')
-    def condition(self, p):
-        pass
-
-    @_('var NOTEQUAL expression')
-    def condition(self, p):
-        pass
-
-    @_('var LT expression')
-    def condition(self, p):
-        pass
-
-    @_('var GT expression')
-    def condition(self, p):
-        pass
-
-    @_('var LE expression')
-    def condition(self, p):
-        pass
-
-    @_('var GE expression')
-    def condition(self, p):
         pass
 
     # Unary expressions
-    @_('expression "\'"')
+    @_(
+        '"-" expression',
+        'expression "\'"'
+    )
     def expression(self, p):
         pass
-
-    @_('"-" expression')
+    
+    @_(
+        'matrix',
+        'vector'
+    )
     def expression(self, p):
         pass
 
     # Matrix functions
-    @_('EYE "(" expression ")"')
+    @_(
+        'EYE "(" expression ")"',
+        'ZEROS "(" expression ")"',
+        'ONES "(" expression ")"'
+    )
     def expression(self, p):
         pass
 
-    @_('ZEROS "(" expression ")"')
+    @_('variable')
     def expression(self, p):
         pass
-
-    @_('ONES "(" expression ")"')
-    def expression(self, p):
-        pass
-
-    # Variable and constants
-    @_('INT')
-    def expression(self, p):
-        pass
-
-    @_('FLOAT')
-    def expression(self, p):
-        pass
-
-    @_('var')
-    def expression(self, p):
-        pass
-
-    @_('ID')
-    def var(self, p):
-        pass
-
+    
     @_('STRING')
     def expression(self, p):
         pass
+    
+    @_('ID')
+    def var(self, p):
+        pass
+    
+    # Relational expressions using defined tokens
+    @_(
+       'expression EQUAL expression',
+       'expression NOTEQUAL expression',
+       'expression LT expression',
+       'expression GT expression',
+       'expression LE expression',
+       'expression GE expression'
+    )
+    def condition(self, p):
+        pass
+    
+    @_('"[" vectors "]"')
+    def matrix(self, p):
+        pass
+    
+    @_('vectors , vector', 'vector')
+    def vectors(self, p):
+        pass
+    
+    @_('"[" variables "]"')
+    def vector(self, p):
+        pass
+    
+    @_('variables , variable', 'variable')
+    def variables(self, p):
+        pass
+    
+    @_('var', 'INT', 'FLOAT', 'vector_idx', 'matrix_idx')
+    def variable(self, p):
+        pass
+    
+    @_('var "[" INT , INT "]"')
+    def matrix_idx(self, p):
+        pass
+    
+    @_('var "[" INT "]"')
+    def vector_idx(self, p):
+        pass
+    
+    
+    
