@@ -9,8 +9,8 @@ class Scanner(Lexer):
 
     # Tokeny
     tokens={ID, DOTADD, DOTSUB, DOTMULT, DOTDIV, ADDASSIGN, SUBASSIGN, MULTASSIGN, 
-            DIVASSIGN,LT, GT, NOTEQUAL, EQUAL, INT,
-            FLOAT, STRINGS} | reserved
+            DIVASSIGN,LT, GT, GE, LE, NOTEQUAL, EQUAL, INT,
+            FLOAT, STRING} | reserved
     
     # Literał, zwracany przez lexer w takiej samej postaci
     literals = [ '+', '-', '*', '/','=','<','>','(',')','[',']','{','}',',',':',';','\'' ]
@@ -48,6 +48,8 @@ class Scanner(Lexer):
     DIVASSIGN=r'/='
     LT=r'<='
     GT=r'>='
+    GE=r'>'
+    LE=r'<'
     NOTEQUAL=r'!='
     EQUAL=r'=='
     

@@ -1,16 +1,10 @@
 class Node(object):
     pass
 
-class InstructionsOne(Node):
-    def __init__(self, instruction):
-        self.instruction = instruction
+class Instructions(Node):
+    def __init__(self, instructions):
+        self.instructions = instructions
         
-
-class InstructionsList(Node):
-    def __init__(self, instructions, instruction):
-        self.instructions = instruction.append(instruction)
-
-
 class If(Node):
     def __init__(self, condition, instruction):
         self.condition = condition
@@ -85,7 +79,8 @@ class UnaryTranspose(Node):
         self.expression = expression
         
 class Function(Node):
-    def __init__(self, expression):
+    def __init__(self, function_name, expression):
+        self.function_name = function_name
         self.expression = expression
         
 class Condition(Node):
@@ -94,21 +89,13 @@ class Condition(Node):
         self.operator = operator
         self.expression2 = expression2
 
-class VectorsList(Node):
-    def __init__(self, vectors, vector):
-        self.vectors = vectors.append(vector)
-        
-class VectorsOne(Node):
-    def __init__(self, vector):
-        self.vector = vector
+class Vectors(Node):
+    def __init__(self, vectors):
+        self.vectors = vectors
 
-class VariablesList(Node):
-    def __init__(self, variables, variable):
-        self.variables = variables.append(variable)
-        
-class VariablesOne(Node):
-    def __init__(self, variable):
-        self.variable = variable
+class Variables(Node):
+    def __init__(self, variables):
+        self.variables = variables
 
 class MatrixIdx(Node):
     def __init__(self, var, idx1, idx2):
@@ -120,6 +107,18 @@ class VectorIdx(Node):
     def __init__(self, var, idx):
         self.var = var
         self.idx = idx
+
+class Id(Node):
+    def __init__(self, id):
+        self.id = id
+
+class Number(Node):
+    def __init__(self, number):
+        self.number = number
+
+class Vector(Node):
+    def __init__(self, vector):
+        self.vector = vector
 
 class Error(Node):
     def __init__(self):
