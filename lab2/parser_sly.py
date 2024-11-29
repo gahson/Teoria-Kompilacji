@@ -6,7 +6,7 @@ class Mparser(Parser):
     debugfile = 'parser.out'
 
     precedence = (
-        ('nonassoc', 'IFX'),  # dla niejednoznaczności if-else
+        ('nonassoc', 'IFX'),
         ('nonassoc', 'ELSE'),
         ('nonassoc', 'LT', 'GT', 'GE', 'LE', 'EQUAL', 'NOTEQUAL'),
         ("left", '+', '-'),
@@ -17,37 +17,30 @@ class Mparser(Parser):
         ('right', 'ADDASSIGN', 'SUBASSIGN', 'MULTASSIGN', 'DIVASSIGN'),
     )
 
-    # program -> instructions_opt
     @_('instructions_opt')
     def program(self, p):
         pass
 
-    # instructions_opt -> instructions | ε
     @_('instructions', '')
     def instructions_opt(self, p):
         pass
 
-    # instructions -> instructions instruction | instruction
     @_('instructions instruction', 'instruction')
     def instructions(self, p):
         pass
 
-    # instruction -> { instructions } | reserved_instruction ; | assignment_instruction ;
     @_(" '{' instructions '}' ", "reserved_instruction ';'", "assignment_instruction ';'")
     def instruction(self, p):
         pass
-    
-    # instruction -> IF '(' condition ')' instruction
+
     @_('IF "(" condition ")" instruction %prec IFX')
     def instruction(self, p):
         pass
-    
-    # instruction -> IF '(' condition ')' instruction ELSE instruction
+
     @_('IF "(" condition ")" instruction ELSE instruction')
     def instruction(self, p):
         pass
 
-    # Loop instructions
     @_('FOR var "=" expression ":" expression instruction')
     def instruction(self, p):
         pass
@@ -56,7 +49,6 @@ class Mparser(Parser):
     def instruction(self, p):
         pass
 
-    # Simple reserved instructions
     @_('BREAK')
     def reserved_instruction(self, p):
         pass
@@ -68,13 +60,8 @@ class Mparser(Parser):
     @_('RETURN expression_list')
     def reserved_instruction(self, p):
         pass
-    
-    # Expression list for print
-    @_('expression_list "," expression')
-    def expression_list(self, p):
-        pass
 
-    @_('expression')
+    @_('expression_list "," expression', 'expression')
     def expression_list(self, p):
         pass
 
@@ -100,7 +87,6 @@ class Mparser(Parser):
     def assignment_operator(self, p):
         pass
 
-    # Binary expressions
     @_(
        'expression "+" expression',
        'expression "-" expression',
@@ -110,7 +96,6 @@ class Mparser(Parser):
     def expression(self, p):
         pass
 
-    # Matrix expressions
     @_(
         'expression DOTADD expression',
         'expression DOTSUB expression',
@@ -120,14 +105,13 @@ class Mparser(Parser):
     def expression(self, p):
         pass
 
-    # Unary expressions
     @_(
         '"-" expression',
         'expression "\'"'
     )
     def expression(self, p):
         pass
-    
+
     @_(
         'matrix',
         'vector'
@@ -135,7 +119,6 @@ class Mparser(Parser):
     def expression(self, p):
         pass
 
-    # Matrix functions
     @_(
         'EYE "(" expression ")"',
         'ZEROS "(" expression ")"',
@@ -147,16 +130,15 @@ class Mparser(Parser):
     @_('variable')
     def expression(self, p):
         pass
-    
+
     @_('STRING')
     def expression(self, p):
         pass
-    
+
     @_('ID')
     def var(self, p):
         pass
-    
-    # Relational expressions using defined tokens
+
     @_(
        'expression EQUAL expression',
        'expression NOTEQUAL expression',
@@ -167,34 +149,35 @@ class Mparser(Parser):
     )
     def condition(self, p):
         pass
-    
+
     @_('"[" vectors "]"')
     def matrix(self, p):
         pass
-    
-    @_('vectors , vector', 'vector')
+
+    @_('vectors "," vector', 'vector')
     def vectors(self, p):
         pass
-    
+
     @_('"[" variables "]"')
     def vector(self, p):
         pass
-    
-    @_('variables , variable', 'variable')
+
+    @_('variables "," variable', 'variable')
     def variables(self, p):
         pass
-    
-    @_('var', 'INT', 'FLOAT', 'vector_idx', 'matrix_idx')
+
+    @_('var', 'number', 'vector_idx', 'matrix_idx')
     def variable(self, p):
         pass
-    
-    @_('var "[" INT , INT "]"')
+
+    @_('INT', 'FLOAT')
+    def number(self, p):
+        pass
+
+    @_('var "[" INT "," INT "]"')
     def matrix_idx(self, p):
         pass
-    
+
     @_('var "[" INT "]"')
     def vector_idx(self, p):
         pass
-    
-    
-    
