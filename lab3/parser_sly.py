@@ -7,7 +7,7 @@ class Mparser(Parser):
     debugfile = 'parser.out'
 
     precedence = (
-        ('nonassoc', 'IFX'),  # dla niejednoznaczności if-else
+        ('nonassoc', 'IFX'),
         ('nonassoc', 'ELSE'),
         ('nonassoc', 'LT', 'GT', 'GE', 'LE', 'EQUAL', 'NOTEQUAL'),
         ("left", '+', '-'),
@@ -18,17 +18,14 @@ class Mparser(Parser):
         ('right', 'ADDASSIGN', 'SUBASSIGN', 'MULTASSIGN', 'DIVASSIGN'),
     )
 
-    # program -> instructions_opt
     @_('instructions_opt')
     def program(self, p):
         return p[0]
 
-    # instructions_opt -> instructions | ε
     @_('instructions', '')
     def instructions_opt(self, p):
         return p[0]
 
-    # instructions -> instructions instruction | instruction
     @_('instructions instruction', 'instruction')
     def instructions(self, p):        
         if len(p) == 1:
@@ -36,50 +33,41 @@ class Mparser(Parser):
         elif len(p) == 2:
             return AST.Instructions(p[0].instructions + [p[1]])
 
-    # instruction -> { instructions } | reserved_instruction ; | assignment_instruction ;
     @_(" '{' instructions '}' ", "reserved_instruction ';'", "assignment_instruction ';'")
     def instruction(self, p):
         if len(p) == 3:
             return p[1]
         elif len(p) == 2:
             return p[0]
-    
-    # instruction -> IF '(' condition ')' instruction
+
     @_('IF "(" condition ")" instruction %prec IFX')
     def instruction(self, p):
         return AST.If(p[2], p[4])
-    
-    # instruction -> IF '(' condition ')' instruction ELSE instruction
+
     @_('IF "(" condition ")" instruction ELSE instruction')
     def instruction(self, p):
         return AST.IfElse(p[2], p[4], p[6])
 
-    # instruction -> FOR var "=" expression ":" expression instruction
     @_('FOR var "=" expression ":" expression instruction')
     def instruction(self, p):
         return AST.For(p[1], p[3], p[5], p[6])
 
-    # instruction -> WHILE "(" condition ")" instruction
     @_('WHILE "(" condition ")" instruction')
     def instruction(self, p):
         return AST.While(p[2], p[4])
 
-    # reserved_instruction -> BREAK
     @_('BREAK')
     def reserved_instruction(self, p):
         return AST.Break()
     
-    # reserved_instruction -> CONTINUE
     @_('CONTINUE')
     def reserved_instruction(self, p):
         return AST.Continue()
 
-    # reserved_instruction -> RETURN expression_list
     @_('RETURN expression_list')
     def reserved_instruction(self, p):
         return AST.Return(p[1])
-    
-    # expression_list -> expression_list "," expression
+
     @_('expression_list "," expression', 'expression')
     def expression_list(self, p):
         if len(p) == 3:
@@ -87,13 +75,10 @@ class Mparser(Parser):
         else:
             return AST.Expressions([p[0]])
 
-    # reserved_instruction -> PRINT expression_list
     @_('PRINT expression_list')
     def reserved_instruction(self, p):
         return AST.Print(p[1])
 
-    # assignment_instruction -> var assignment_operator expression | 
-    # matrix_idx assignment_operator expression | vector_idx assignment_operator expression
     @_(
         'var assignment_operator expression',
         'matrix_idx assignment_operator expression',
@@ -102,7 +87,6 @@ class Mparser(Parser):
     def assignment_instruction(self, p):
         return AST.AssignmentInstruction(p[0], p[1], p[2])
 
-    # assignment_operator -> "=" | ADDASSIGN | SUBASSIGN | MULTASSIGN | DIVASSIGN
     @_(
         '"="',
         'ADDASSIGN',
@@ -113,7 +97,6 @@ class Mparser(Parser):
     def assignment_operator(self, p):
         return p[0]
 
-    # Binary expressions
     @_(
        'expression "+" expression',
        'expression "-" expression',
@@ -121,9 +104,8 @@ class Mparser(Parser):
        'expression "/" expression'
        )
     def expression(self, p):
-        return AST.BinaryExpression(p[0], p[1], p[2])
+        return AST.OperatorExpression(p[0], p[1], p[2])
 
-    # Matrix expressions
     @_(
         'expression DOTADD expression',
         'expression DOTSUB expression',
@@ -131,9 +113,8 @@ class Mparser(Parser):
         'expression DOTDIV expression'
         )
     def expression(self, p):
-        return AST.MatrixExpression(p[0], p[1], p[2])
+        return AST.OperatorExpression(p[0], p[1], p[2])
 
-    # Unary expressions
     @_(
         '"-" expression',
         'expression "\'"'
@@ -151,7 +132,6 @@ class Mparser(Parser):
     def expression(self, p):
         return p[0]
 
-    # Matrix functions
     @_(
         'EYE "(" expression ")"',
         'ZEROS "(" expression ")"',
@@ -171,8 +151,7 @@ class Mparser(Parser):
     @_('ID')
     def var(self, p):
         return AST.Id(p[0])
-    
-    # Relational expressions using defined tokens
+
     @_(
        'expression EQUAL expression',
        'expression NOTEQUAL expression',
@@ -210,9 +189,13 @@ class Mparser(Parser):
     def variable(self, p):
         return p[0]
     
-    @_('INT', 'FLOAT')
+    @_('INT')
     def number(self, p):
-        return AST.Number(p[0])
+        return AST.IntNumber(p[0])
+    
+    @_('FLOAT')
+    def number(self, p):
+        return AST.FloatNumber(p[0])
     
     @_('var "[" INT "," INT "]"')
     def matrix_idx(self, p):

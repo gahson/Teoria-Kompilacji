@@ -54,18 +54,12 @@ class AssignmentInstruction(Node):
         self.assignment_operator = assignment_operator
         self.expression = expression
 
-class BinaryExpression(Node):
+class OperatorExpression(Node):
     def __init__(self, expression1, operator, expression2):
         self.expression1 = expression1
         self.operator = operator
         self.expression2 = expression2
-
-class MatrixExpression(Node):
-    def __init__(self, expression1, operator, expression2):
-        self.expression1 = expression1
-        self.operator = operator
-        self.expression2 = expression2
-
+        
 class UnaryMinus(Node):
     def __init__(self, expression):
         self.expression = expression
@@ -108,9 +102,13 @@ class Id(Node):
     def __init__(self, id):
         self.id = id
 
-class Number(Node):
-    def __init__(self, number):
-        self.number = number
+class IntNumber(Node):
+    def __init__(self, int_number):
+        self.int_number = int_number
+
+class FloatNumber(Node):
+    def __init__(self, float_number):
+        self.float_number = float_number
 
 class Vector(Node):
     def __init__(self, vector):

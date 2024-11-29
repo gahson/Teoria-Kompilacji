@@ -78,18 +78,12 @@ class TreePrinter:
         self.lhs.printTree(indent + 1)
         self.expression.printTree(indent + 1)
         
-    @addToClass(AST.BinaryExpression)
+    @addToClass(AST.OperatorExpression)
     def printTree(self, indent=0):
         print("| " * indent + self.operator)
         self.expression1.printTree(indent + 1)
         self.expression2.printTree(indent + 1)
        
-    @addToClass(AST.MatrixExpression)
-    def printTree(self, indent=0):
-        print("| " * indent + self.operator)
-        self.expression1.printTree(indent + 1)
-        self.expression2.printTree(indent + 1) 
-        
     @addToClass(AST.UnaryMinus) # Do poprawy
     def printTree(self, indent=0):
         print("| " * indent + "UNARY MINUS")
@@ -139,10 +133,14 @@ class TreePrinter:
     def printTree(self, indent=0):
         print("| " * indent + self.id)
         
-    @addToClass(AST.Number)
+    @addToClass(AST.IntNumber)
     def printTree(self, indent=0):
-        print("| " * indent + str(self.number))
-    
+        print("| " * indent + str(self.int_number))
+
+    @addToClass(AST.FloatNumber)
+    def printTree(self, indent=0):
+        print("| " * indent + str(self.float_number))
+
     @addToClass(AST.Vector)
     def printTree(self, indent=0):
         print("| " * indent + "VECTOR")
