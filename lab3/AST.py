@@ -40,13 +40,9 @@ class Return(Node):
     def __init__(self, expression_list):
         self.expression_list = expression_list
         
-class ExpressionList(Node):
-    def __init__(self, expression_list, expression):
-        self.expression_list = expression_list.append(expression)
-        
-class ExpressionOne(Node):
-    def __init__(self, expression):
-        self.expression = expression
+class Expressions(Node):
+    def __init__(self, expressions):
+        self.expressions = expressions
         
 class Print(Node):
     def __init__(self, expression_list):

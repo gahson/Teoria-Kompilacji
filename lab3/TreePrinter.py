@@ -38,8 +38,9 @@ class TreePrinter:
     def printTree(self, indent=0):
         print("| " * indent + 'FOR')
         self.var.printTree(indent + 1)
-        self.expression1.printTree(indent + 1)
-        self.expression2.printTree(indent + 1)
+        print("| " * (indent + 1) + 'RANGE')
+        self.expression1.printTree(indent + 2)
+        self.expression2.printTree(indent + 2)
         self.instruction.printTree(indent + 1)
         
     @addToClass(AST.While)
@@ -61,14 +62,10 @@ class TreePrinter:
         print("| " * indent + 'RETURN')
         self.expression_list.printTree(indent + 1)
         
-    @addToClass(AST.ExpressionList)
+    @addToClass(AST.Expressions)
     def printTree(self, indent=0):
-        for expression in self.expression_list:
+        for expression in self.expressions:
             expression.printTree(indent)
-            
-    @addToClass(AST.ExpressionOne)
-    def printTree(self, indent=0):
-        self.expression.printTree(indent)
         
     @addToClass(AST.Print)
     def printTree(self, indent=0):

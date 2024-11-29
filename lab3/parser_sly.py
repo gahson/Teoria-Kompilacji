@@ -80,14 +80,12 @@ class Mparser(Parser):
         return AST.Return(p[1])
     
     # expression_list -> expression_list "," expression
-    @_('expression_list "," expression')
+    @_('expression_list "," expression', 'expression')
     def expression_list(self, p):
-        return AST.ExpressionList(p[0], p[2])
-
-    # expression_list -> expression
-    @_('expression')
-    def expression_list(self, p):
-        return AST.ExpressionOne(p[0])
+        if len(p) == 3:
+            return AST.Expressions(p[0].expressions + [p[2]])
+        else:
+            return AST.Expressions([p[0]])
 
     # reserved_instruction -> PRINT expression_list
     @_('PRINT expression_list')
