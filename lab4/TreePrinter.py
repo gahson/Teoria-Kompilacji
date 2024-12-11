@@ -120,14 +120,7 @@ class TreePrinter:
     def printTree(self, indent=0):
         print("| " * indent + "REF")
         self.var.printTree(indent + 1)
-        print("| " * (indent + 1) + str(self.idx1))
-        print("| " * (indent + 1) + str(self.idx2))
-        
-    @addToClass(AST.VectorIdx)
-    def printTree(self, indent=0):
-        print("| " * indent + "VECTOR INDEX")
-        self.var.printTree(indent + 1)
-        print("| " * indent + str(self.idx))
+        self.idxs.printTree(indent + 1)
     
     @addToClass(AST.Id)
     def printTree(self, indent=0):
