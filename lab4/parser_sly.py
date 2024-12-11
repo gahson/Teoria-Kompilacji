@@ -22,9 +22,13 @@ class Mparser(Parser):
     def program(self, p):
         return p[0]
 
-    @_('instructions', '')
+    @_('instructions')
     def instructions_opt(self, p):
         return p[0]
+    
+    @_('')
+    def instructions_opt(self, p):
+        pass
 
     @_('instructions instruction', 'instruction')
     def instructions(self, p):        
@@ -81,8 +85,7 @@ class Mparser(Parser):
 
     @_(
         'var assignment_operator expression',
-        'matrix_idx assignment_operator expression',
-        'vector_idx assignment_operator expression'
+        'matrix_idx assignment_operator expression'
     )
     def assignment_instruction(self, p):
         return AST.AssignmentInstruction(p[0], p[1], p[2])
@@ -133,9 +136,9 @@ class Mparser(Parser):
         return p[0]
 
     @_(
-        'EYE "(" expression ")"',
-        'ZEROS "(" expression ")"',
-        'ONES "(" expression ")"'
+        'EYE "(" expression_list ")"',
+        'ZEROS "(" expression_list ")"',
+        'ONES "(" expression_list ")"'
     )
     def expression(self, p):
         return AST.Function(p[0], p[2])
@@ -185,7 +188,7 @@ class Mparser(Parser):
         else:
             return AST.Variables([p[0]])
     
-    @_('var', 'number', 'vector_idx', 'matrix_idx')
+    @_('var', 'number', 'matrix_idx')
     def variable(self, p):
         return p[0]
     
@@ -197,13 +200,8 @@ class Mparser(Parser):
     def number(self, p):
         return AST.FloatNumber(p[0])
     
-    @_('var "[" INT "," INT "]"')
+    @_('var "[" variables "]"')
     def matrix_idx(self, p):
-        return AST.MatrixIdx(p[0], p[2], p[4])
-    
-    @_('var "[" INT "]"')
-    def vector_idx(self, p):
-        return AST.VectorIdx(p[0], [2])
-    
+        return AST.MatrixIdx(p[0], p[2])
     
     

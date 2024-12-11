@@ -88,15 +88,9 @@ class Variables(Node):
         self.variables = variables
 
 class MatrixIdx(Node):
-    def __init__(self, var, idx1, idx2):
+    def __init__(self, var, idxs):
         self.var = var
-        self.idx1 = idx1
-        self.idx2 = idx2
-
-class VectorIdx(Node):
-    def __init__(self, var, idx):
-        self.var = var
-        self.idx = idx
+        self.idxs = idxs
 
 class Id(Node):
     def __init__(self, id):
