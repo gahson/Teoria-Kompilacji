@@ -1,5 +1,5 @@
 #!/usr/bin/python
-
+import copy
 
 class VariableSymbol(object):
     def __init__(self, symbol_name, symbol_type):
@@ -33,13 +33,12 @@ class SymbolTable(object):
     
     def getParentScope(self):
         return self.parent
-    #
 
     def pushScope(self, name):
-        pass
-    #
-
+        new_scope = SymbolTable(parent=self, name=name)
+        new_scope.table = clone = copy.deepcopy(self.table)
+        return new_scope
+    
     def popScope(self):
-        pass
-    #
+        return self.parent
 
