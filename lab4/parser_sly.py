@@ -62,11 +62,11 @@ class Mparser(Parser):
 
     @_('BREAK')
     def reserved_instruction(self, p):
-        return AST.Break()
+        return AST.Break(p.lineno)
     
     @_('CONTINUE')
     def reserved_instruction(self, p):
-        return AST.Continue()
+        return AST.Continue(p.lineno)
 
     @_('RETURN expression_list')
     def reserved_instruction(self, p):
@@ -88,7 +88,7 @@ class Mparser(Parser):
         'matrix_idx assignment_operator expression'
     )
     def assignment_instruction(self, p):
-        return AST.AssignmentInstruction(p[0], p[1], p[2])
+        return AST.AssignmentInstruction(p[0], p[1], p[2], p.lineno)
 
     @_(
         '"="',
@@ -107,7 +107,7 @@ class Mparser(Parser):
        'expression "/" expression'
        )
     def expression(self, p):
-        return AST.OperatorExpression(p[0], p[1], p[2])
+        return AST.OperatorExpression(p[0], p[1], p[2], p.lineno)
 
     @_(
         'expression DOTADD expression',
@@ -116,17 +116,17 @@ class Mparser(Parser):
         'expression DOTDIV expression'
         )
     def expression(self, p):
-        return AST.OperatorExpression(p[0], p[1], p[2])
+        return AST.OperatorExpression(p[0], p[1], p[2], p.lineno)
 
     @_(
         '"-" expression',
         'expression "\'"'
     )
     def expression(self, p):
-        if p[1] == '-':
-            return AST.UnaryMinus(p[1])
+        if p[0] == '-':
+            return AST.UnaryMinus(p[1], p.lineno)
         else:
-            return AST.UnaryTranspose(p[0])
+            return AST.UnaryTranspose(p[0], p.lineno)
     
     @_(
         'matrix',
@@ -141,7 +141,7 @@ class Mparser(Parser):
         'ONES "(" expression_list ")"'
     )
     def expression(self, p):
-        return AST.Function(p[0], p[2])
+        return AST.Function(p[0], p[2], p.lineno)
 
     @_('variable')
     def expression(self, p):
@@ -149,7 +149,7 @@ class Mparser(Parser):
     
     @_('STRING')
     def expression(self, p):
-        return p[0]
+        return AST.String(p[0])
     
     @_('ID')
     def var(self, p):
@@ -164,7 +164,7 @@ class Mparser(Parser):
        'expression GE expression'
     )
     def condition(self, p):
-        return AST.Condition(p[0], p[1], p[2])
+        return AST.Condition(p[0], p[1], p[2], p.lineno)
     
     @_('"[" vectors "]"')
     def matrix(self, p):
@@ -173,13 +173,13 @@ class Mparser(Parser):
     @_('vectors "," vector', 'vector')
     def vectors(self, p):
         if len(p) == 3:
-            return AST.Vectors(p[0].vectors + [p[2]])
+            return AST.Vectors(p[0].vectors + [p[2]], p.lineno)
         else:
-            return AST.Vectors([p[0]])
+            return AST.Vectors([p[0]], p.lineno)
     
     @_('"[" variables "]"')
     def vector(self, p):
-        return AST.Vector(p[1])
+        return AST.Vector(p[1], p.lineno)
     
     @_('variables "," variable', 'variable')
     def variables(self, p):
@@ -188,7 +188,7 @@ class Mparser(Parser):
         else:
             return AST.Variables([p[0]])
     
-    @_('var', 'number', 'matrix_idx')
+    @_('var', 'number', 'matrix_idx', 'string')
     def variable(self, p):
         return p[0]
     
@@ -200,8 +200,12 @@ class Mparser(Parser):
     def number(self, p):
         return AST.FloatNumber(p[0])
     
+    @_('STRING')
+    def string(self, p):
+        return AST.String(p[0])
+    
     @_('var "[" variables "]"')
     def matrix_idx(self, p):
-        return AST.MatrixIdx(p[0], p[2])
+        return AST.MatrixIdx(p[0], p[2], p.lineno)
     
     

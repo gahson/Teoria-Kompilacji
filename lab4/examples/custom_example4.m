@@ -1,0 +1,29 @@
+A = eye(5);
+B = eye(5, 5);
+C = eye("Ala");
+D = eye("Ala", "ma", "Kota");
+E = eye(5.0);
+F = eye(5, 5.0, "Ala");
+G = eye([1]);
+H = eye([1, 2, 3]);
+I = eye([1, 2], [3, 4]);
+
+A = zeros(5);
+B = zeros(5, 5);
+C = zeros("Ala");
+D = zeros("Ala", "ma", "Kota");
+E = zeros(5.0);
+F = zeros(5, 5.0, "Ala");
+G = zeros([1]);
+H = zeros([1, 2, 3]);
+I = zeros([1, 2], [3, 4]);
+
+A = ones(5);
+B = ones(5, 5);
+C = ones("Ala");
+D = ones("Ala", "ma", "Kota");
+E = ones(5.0);
+F = ones(5, 5.0, "Ala");
+G = ones([1]);
+H = ones([1, 2, 3]);
+I = ones([1, 2], [3, 4]);

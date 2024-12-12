@@ -134,6 +134,10 @@ class TreePrinter:
     def printTree(self, indent=0):
         print("| " * indent + str(self.float_number))
 
+    @addToClass(AST.String)
+    def printTree(self, indent=0):
+        print("| " * indent + self.string)
+
     @addToClass(AST.Vector)
     def printTree(self, indent=0):
         print("| " * indent + "VECTOR")
