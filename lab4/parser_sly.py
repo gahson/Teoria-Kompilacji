@@ -104,7 +104,7 @@ class Mparser(Parser):
        'expression "+" expression',
        'expression "-" expression',
        'expression "*" expression',
-       'expression "/" expression'
+       'expression "/" expression',
        )
     def expression(self, p):
         return AST.OperatorExpression(p[0], p[1], p[2], p.lineno)
@@ -146,10 +146,6 @@ class Mparser(Parser):
     @_('variable')
     def expression(self, p):
         return p[0]
-    
-    @_('STRING')
-    def expression(self, p):
-        return AST.String(p[0])
     
     @_('ID')
     def var(self, p):
@@ -203,6 +199,10 @@ class Mparser(Parser):
     @_('STRING')
     def string(self, p):
         return AST.String(p[0])
+    
+    #@_('STRING')
+    #def expression(self, p):
+    #    return AST.String(p[0])
     
     @_('var "[" variables "]"')
     def matrix_idx(self, p):
