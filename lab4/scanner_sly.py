@@ -46,10 +46,10 @@ class Scanner(Lexer):
     SUBASSIGN=r'-='
     MULTASSIGN=r'\*='
     DIVASSIGN=r'/='
-    LT=r'<'
-    GT=r'>'
     GE=r'>='
     LE=r'<='
+    LT=r'<'
+    GT=r'>'
     NOTEQUAL=r'!='
     EQUAL=r'=='
     
@@ -79,7 +79,7 @@ class Scanner(Lexer):
         self.lineno += len(t.value) # Zliczamy, w której lini jesteśmy
         
     def error(self, t):
-        print(f"W lini ({t.lineno}) wystąpił nierozpoznany znak '{t.value[0]}'")
+        print(f"Unknown character at ({t.lineno}) line'{t.value[0]}'")
         self.index += 1 # Skip do następnego znaku zamiast domyślnego rzucenia wyjątku
 
 if __name__ == '__main__':
