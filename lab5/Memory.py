@@ -45,7 +45,7 @@ class MemoryStack:
         # Trzeba zaaktualizować nadpisane wartości w ostatnim stacku w poprzednich stackach
         # przed wykonaniem pop'a
         
-        for name, value in self.stack[-1].items():
+        for name, value in self.stack[-1].mem.items():
             
             for i in range(len(self.stack) - 2, -1, -1):
                 if self.stack[i].has_key(name):
