@@ -175,34 +175,35 @@ class TypeChecker(NodeVisitor):
         
         assignment_type = get_type(operator, left, right)
 
-        if  self.table.get(node.lhs.id).symbol_type is None and operator != '=':
-                print(f"Line {node.lineno}: Can't assign value to non existent symbol!")
-        else:        
-            if assignment_type is not None:
-                if assignment_type != 'matrix':
-                    # Jeśli rezultatem przypisania nie jest macierz to aktualizuję
-                    # zawartość symbolu to lewej
-                    self.table.put(left.symbol_name, VariableSymbol(left.symbol_name, right.symbol_type))
-                else: 
-                    # Jeśli jest macierzą to również aktualizuję zawartość symbolu po lewej
-                    # tylko tym razem, typ symbolu to macierz
-                    if get_dimensions(operator, left, right) is not None:
-                        self.table.put(left.symbol_name, MatrixSymbol(left.symbol_name, right.matrix_dimensions))
-                    else:
-                        print(f"Line {node.lineno}: Wrong assignment operation!")
-            else:
-                if isinstance(left, VariableSymbol) and left.symbol_type is None:
-                    # Nic nie było wcześniej przypisane do lewego symbolu
-                    if isinstance(right, MatrixSymbol):
-                        new_l = MatrixSymbol(left.symbol_name, right.matrix_dimensions)
-                        self.table.put(left.symbol_name, new_l)
-                    elif isinstance(right, VariableSymbol):
-                        new_l = VariableSymbol(left.symbol_name, right.symbol_type)
-                        self.table.put(left.symbol_name, new_l)        
+        #if self.table.get(node.lhs.id).symbol_type is None and operator != '=':
+        #    print(f"Line {node.lineno}: Can't assign value to non existent symbol!")
+                
+        #else:        
+        if assignment_type is not None:
+            if assignment_type != 'matrix':
+                # Jeśli rezultatem przypisania nie jest macierz to aktualizuję
+                # zawartość symbolu to lewej
+                self.table.put(left.symbol_name, VariableSymbol(left.symbol_name, right.symbol_type))
+            else: 
+                # Jeśli jest macierzą to również aktualizuję zawartość symbolu po lewej
+                # tylko tym razem, typ symbolu to macierz
+                if get_dimensions(operator, left, right) is not None:
+                    self.table.put(left.symbol_name, MatrixSymbol(left.symbol_name, right.matrix_dimensions))
                 else:
-                    # Left ma inny typ niż None, czyli próbujemy wykonać operację przypisania
-                    # na niekompatybilnych typach
-                    print(f"Line {node.lineno}: Can't perform '{operator}' on an instances of '{right.symbol_type}' and '{left.symbol_type}'")
+                    print(f"Line {node.lineno}: Wrong assignment operation!")
+        else:
+            if isinstance(left, VariableSymbol) and left.symbol_type is None:
+                # Nic nie było wcześniej przypisane do lewego symbolu
+                if isinstance(right, MatrixSymbol):
+                    new_l = MatrixSymbol(left.symbol_name, right.matrix_dimensions)
+                    self.table.put(left.symbol_name, new_l)
+                elif isinstance(right, VariableSymbol):
+                    new_l = VariableSymbol(left.symbol_name, right.symbol_type)
+                    self.table.put(left.symbol_name, new_l)        
+            else:
+                # Left ma inny typ niż None, czyli próbujemy wykonać operację przypisania
+                # na niekompatybilnych typach
+                print(f"Line {node.lineno}: Can't perform '{operator}' on an instances of '{right.symbol_type}' and '{left.symbol_type}'")
         
     def visit_OperatorExpression(self, node):
         left = self.visit(node.expression1)

@@ -13,7 +13,7 @@ class Memory:
         return self.mem[name]
         
     def put(self, name, value):  # puts into memory current value of variable <name>
-        self.mem.update((name, value))
+        self.mem.update([(name, value)])
 
 class MemoryStack:
                                                                              

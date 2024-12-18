@@ -120,13 +120,19 @@ class Mparser(Parser):
 
     @_(
         '"-" expression',
-        'expression "\'"'
+        'expression "\'"',
     )
     def expression(self, p):
         if p[0] == '-':
             return AST.UnaryMinus(p[1], p.lineno)
         else:
             return AST.UnaryTranspose(p[0], p.lineno)
+    
+    @_(
+        '"(" expression ")"'
+    )
+    def expression(self, p):
+        return p[1]
     
     @_(
         'matrix',
