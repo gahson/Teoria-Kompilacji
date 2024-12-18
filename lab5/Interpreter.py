@@ -115,9 +115,11 @@ class Interpreter(object):
 
     @when(AST.For)
     def visit(self, node):
-        var = node.var.accept(self)
         
         expression1 = node.expression1.accept(self)
+        
+        #self.memory_stack.insert(node.var.id, expression1)
+
         expression2 = node.expression2.accept(self)
         
         self.memory_stack.push('For')
@@ -125,11 +127,11 @@ class Interpreter(object):
         if isinstance(expression2, np.ndarray):
             range_ = expression2
         else:
-            range_ = range(expression2)
+            range_ = range(expression1, expression2)
 
         for item in range_:
             try:
-                self.memory_stack.set(expression1, item)
+                self.memory_stack.set(node.var.id, item)
                 node.instruction.accept(self)
             except ContinueException:
                     continue

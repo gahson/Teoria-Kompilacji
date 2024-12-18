@@ -54,6 +54,7 @@ class Mparser(Parser):
 
     @_('FOR var "=" expression ":" expression instruction')
     def instruction(self, p):
+        
         return AST.For(p[1], p[3], p[5], p[6])
 
     @_('WHILE "(" condition ")" instruction')
