@@ -93,6 +93,7 @@ class TypeChecker(NodeVisitor):
     def __init__(self):
         self.table = SymbolTable(None, 'Program')
         self.nested_loops = 0
+        self.type_checker_error = False
 
     def visit_Program(self, node):
         self.visit(node.instructions)
@@ -150,10 +151,12 @@ class TypeChecker(NodeVisitor):
     def visit_Break(self, node):
         if self.nested_loops == 0:
             print(f"Line {node.lineno}: 'Break' used outside of a loop!")
+            self.type_checker_error = True
             
     def visit_Continue(self, node):
         if self.nested_loops == 0:
             print(f"Line {node.lineno}: 'Continue' used outside of a loop!")
+            self.type_checker_error = True
     
     # Return może zwrócić cokolwiek
     def visit_Return(self, node):
@@ -194,6 +197,7 @@ class TypeChecker(NodeVisitor):
                     self.table.put(left.symbol_name, MatrixSymbol(left.symbol_name, right.matrix_dimensions))
                 else:
                     print(f"Line {node.lineno}: Wrong assignment operation!")
+                    self.type_checker_error = True
         else:
             if isinstance(left, VariableSymbol) and left.symbol_type is None:
                 # Nic nie było wcześniej przypisane do lewego symbolu
@@ -207,6 +211,7 @@ class TypeChecker(NodeVisitor):
                 # Left ma inny typ niż None, czyli próbujemy wykonać operację przypisania
                 # na niekompatybilnych typach
                 print(f"Line {node.lineno}: Can't perform '{operator}' on an instances of '{right.symbol_type}' and '{left.symbol_type}'")
+                self.type_checker_error = True
         
     def visit_OperatorExpression(self, node):
         left = self.visit(node.expression1)
@@ -218,17 +223,20 @@ class TypeChecker(NodeVisitor):
         if left.symbol_type is None:
             print(node.expression1)
             print(f"Line {node.lineno}: Can't perform '{operator}' on non existent variable!")
+            self.type_checker_error = True
             return VariableSymbol(None, None)
         else:
             if operation_type == 'matrix': # Jesli tak, to napewno left i right to macierze
                 dims = get_dimensions(operator, left, right) # Czy dla macierzy o podanych wymiarach operacja ma sens
                 if dims is None:
                     print(f"Line {node.lineno}: Can perform {operator} on matrices with size {left.matrix_dimensions} and {right.matrix_dimensions}")
+                    self.type_checker_error = True
                     return MatrixSymbol(None, None)
                 else:
                     return MatrixSymbol(None, dims)
             elif operation_type is None: # Wyrażenie nie ma sensu dla danych typów
                 print(f"Line {node.lineno}: Can't perform '{operator}' on an instances of '{left.symbol_type}' and '{right.symbol_type}'")
+                self.type_checker_error = True
             return VariableSymbol(None, operation_type)
         
     # Trzeba sprawdzić, czy minus jest ustawiony przez wartością liczbową
@@ -236,6 +244,7 @@ class TypeChecker(NodeVisitor):
         symbol = self.visit(node.expression)
         if symbol.symbol_type not in ['int', 'float']:
             print(f"Line {node.lineno}: Unary minus operator can only be applied to a number!")
+            self.type_checker_error = True
         return symbol
     
     # Trzeba sprawdzić, czy transpozycja jest wywołana na macierzy
@@ -243,6 +252,7 @@ class TypeChecker(NodeVisitor):
         symbol = self.visit(node.expression)
         if not isinstance(symbol, MatrixSymbol):
             print(f"Line {node.lineno}: Transposition only works on matrices!")
+            self.type_checker_error = True
         return symbol
         
     # Trzeba sprawdzić, czy argument funkcji jest int'em
@@ -251,10 +261,12 @@ class TypeChecker(NodeVisitor):
         # Ma być dokładnie jeden argument
         if len(node.expression.expressions) != 1:
             print(f"Line {node.lineno}: Wrong number of arguments in '{node.function_name}' function!")
+            self.type_checker_error = True
         else:
             #Skoro jest jeden argument to sprawdzam, czy jest int'em
             if self.visit(node.expression.expressions[0]).symbol_type != 'int':
                  print(f"Line {node.lineno}: Function argument must be an integer!")
+                 self.type_checker_error = True
             else:
                 return MatrixSymbol(None, [node.expression.expressions[0].int_number, node.expression.expressions[0].int_number])
         return MatrixSymbol(None, [])
@@ -266,6 +278,7 @@ class TypeChecker(NodeVisitor):
 
         if get_type(operator, left, right) != 'bool':
             print(f"Line {node.lineno}: Bad condition!")
+            self.type_checker_error = True
     
     # Tutaj będzie macierz
     def visit_Vectors(self, node):
@@ -273,6 +286,7 @@ class TypeChecker(NodeVisitor):
         vector_no = len(node.vectors)
         if len(set(vector_lengths)) != 1:
             print(f"Line {node.lineno}: All vectors in a matrix have same size!")
+            self.type_checker_error = True
         return MatrixSymbol(None, [vector_no, vector_lengths.pop()])
     
     def visit_Variables(self, node):
@@ -293,6 +307,7 @@ class TypeChecker(NodeVisitor):
             # jeden indeks dla wektora lub 2 dla macierzy
             if len(node.idxs.variables) < 1:
                 print(f"Line {node.lineno}: Number of indexes cant be lower than 1!")
+                self.type_checker_error = True
             else:
                 
                 for i in range(len(node.idxs.variables)):
@@ -301,15 +316,19 @@ class TypeChecker(NodeVisitor):
                 
                     if idx_type != 'int':
                         print(f"Line {node.lineno}: Index type must be an integer!")
+                        self.type_checker_error = True
                     else:
                         if i >= len(dimension):
                             
                             print(f"Line {node.lineno}: Reference to non existent '{i + 1}' matrix dimension!")
+                            self.type_checker_error = True
                         else:
                             if node.idxs.variables[0].int_number >= dimension[i]:
                                 print(f"Line {node.lineno}: Matrix index out of bounds")
+                                self.type_checker_error = True
         else:
             print(f"Line {node.lineno}: Unknown reference to {node.var.id}")
+            self.type_checker_error = True
         
         return VariableSymbol(None, None)
         
@@ -344,10 +363,12 @@ class TypeChecker(NodeVisitor):
             else:
                 if el_type != last_type:
                     print(f"Line {node.lineno}: Mixed types in vector!")
+                    self.type_checker_error = True
             
             # Zakładamy, że wektor może zawierać tylko liczby
             if el_type not in ['int', 'float']:
                     print(f"Line {node.lineno}: Vectors can only contain 'int' or 'float'")
+                    self.type_checker_error = True
             
         # jakby zwracamy symbol utworzony z [[...], [...], [...]] więc nie ma nazwy
         return MatrixSymbol(None, [len(node.vector.variables)])

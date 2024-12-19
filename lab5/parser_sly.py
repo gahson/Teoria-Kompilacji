@@ -5,6 +5,8 @@ import AST
 class Mparser(Parser):
     tokens = Scanner.tokens
     debugfile = 'parser.out'
+    
+    parser_error = False
 
     precedence = (
         ('nonassoc', 'IFX'),
@@ -214,5 +216,10 @@ class Mparser(Parser):
     @_('var "[" variables "]"')
     def matrix_idx(self, p):
         return AST.MatrixIdx(p[0], p[2], p.lineno)
+    
+    def error(self, p):
+        self.parser_error = True
+        if p:
+            print(f"Syntax error at line {p.lineno}")
     
     

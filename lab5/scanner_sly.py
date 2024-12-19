@@ -2,6 +2,7 @@ import sys
 from sly import Lexer
 
 class Scanner(Lexer):
+    lexer_error = False
 
     # Słowa kluczowe
     reserved = {IF, ELSE, FOR, WHILE, BREAK, CONTINUE, RETURN, EYE, ZEROS, ONES, PRINT}
@@ -80,6 +81,7 @@ class Scanner(Lexer):
     def error(self, t):
         print(f"Unknown character at ({t.lineno}) line'{t.value[0]}'")
         self.index += 1 # Skip do następnego znaku zamiast domyślnego rzucenia wyjątku
+        self.lexer_error = True
 
 if __name__ == '__main__':
 
