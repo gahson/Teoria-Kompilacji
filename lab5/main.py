@@ -19,14 +19,10 @@ if __name__ == '__main__':
     parser = Mparser()
 
     ast = parser.parse(lexer.tokenize(text))
-    ast.printTree()
-    # Below code shows how to use visitor
+    
     typeChecker = TypeChecker()   
-    typeChecker.visit(ast)   # or alternatively ast.accept(typeChecker)
+    typeChecker.visit(ast)
 
     ast.accept(Interpreter())
-    # in future
-    # ast.accept(OptimizationPass1())
-    # ast.accept(OptimizationPass2())
-    # ast.accept(CodeGenerator())
+
     
