@@ -8,7 +8,7 @@ from Interpreter import Interpreter
 if __name__ == '__main__':
 
     try:
-        filename = sys.argv[1] if len(sys.argv) > 1 else "examples/triangle.m"
+        filename = sys.argv[1] if len(sys.argv) > 1 else "examples/fibonacci.m"
         file = open(filename, "r")
     except IOError:
         print("Cannot open {0} file".format(filename))
@@ -18,11 +18,16 @@ if __name__ == '__main__':
     lexer = Scanner()
     parser = Mparser()
 
-    ast = parser.parse(lexer.tokenize(text))
+    lexer_out = lexer.tokenize(text)
     
-    typeChecker = TypeChecker()   
-    typeChecker.visit(ast)
-
-    ast.accept(Interpreter())
+    if lexer_out and not lexer.lexer_error:
+        ast = parser.parse(lexer_out)
+        
+        if ast and not parser.parser_error:
+            typeChecker = TypeChecker()   
+            typeChecker.visit(ast)
+            
+            if not typeChecker.type_checker_error:
+                ast.accept(Interpreter())
 
     
