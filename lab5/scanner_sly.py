@@ -1,7 +1,6 @@
 import sys
 from sly import Lexer
 
-
 class Scanner(Lexer):
 
     # Słowa kluczowe

@@ -102,47 +102,50 @@ class TypeChecker(NodeVisitor):
             self.visit(instruction)
             
     def visit_If(self, node):
-        self.table = self.table.pushScope("If")
+        #self.table = self.table.pushScope("If")
         
         self.visit(node.condition)
         self.visit(node.instruction)
         
-        self.table = self.table.popScope()
+        #self.table = self.table.popScope()
         
     def visit_IfElse(self, node):
-        self.table = self.table.pushScope("If")
+        #self.table = self.table.pushScope("If")
         
         self.visit(node.condition)
         self.visit(node.instruction1)
         
-        self.table = self.table.popScope()
-        self.table = self.table.pushScope("Else")
+        #self.table = self.table.popScope()
+        #self.table = self.table.pushScope("Else")
         
         self.visit(node.instruction2)
         
-        self.table = self.table.popScope()
+        #self.table = self.table.popScope()
         
     def visit_For(self, node):
-        self.table = self.table.pushScope("For")
+        #self.table = self.table.pushScope("For")
         
-        self.visit(node.var)
-        self.visit(node.expression1)
+        iterator = self.visit(node.var)
+        expression = self.visit(node.expression1)
+        
+        iterator.symbol_type = expression.symbol_type
+        
         self.visit(node.expression2)
         self.nested_loops += 1
         self.visit(node.instruction)
         self.nested_loops -= 1
         
-        self.table = self.table.popScope()
+        #self.table = self.table.popScope()
         
     def visit_While(self, node):
-        self.table = self.table.pushScope("While")
+        #self.table = self.table.pushScope("While")
         
         self.visit(node.condition)
         self.nested_loops += 1
         self.visit(node.instruction)
         self.nested_loops -= 1
         
-        self.table = self.table.popScope()
+        #self.table = self.table.popScope()
         
     def visit_Break(self, node):
         if self.nested_loops == 0:
@@ -211,7 +214,9 @@ class TypeChecker(NodeVisitor):
         right = self.visit(node.expression2)
         operation_type = get_type(operator, left, right)
 
+
         if left.symbol_type is None:
+            print(node.expression1)
             print(f"Line {node.lineno}: Can't perform '{operator}' on non existent variable!")
             return VariableSymbol(None, None)
         else:
